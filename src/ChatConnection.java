@@ -14,118 +14,107 @@ import javax.jms.TopicSubscriber;
 import javax.naming.InitialContext;
 import javax.swing.JPanel;
 
-public class ChatConnection implements MessageListener{
+public class ChatConnection implements MessageListener {
 
-        private TopicSession pubSession;
-        private TopicPublisher publisher;
-        private TopicSubscriber subscriber;
-        private TopicConnection connection;
-        private String username;
-//        private ArrayList<String> messageList;
-        private JPanel chatPanel;
+    private TopicSession pubSession;
+    private TopicPublisher publisher;
+    private TopicSubscriber subscriber;
+    private TopicConnection connection;
+    private String username;
+    private JPanel chatPanel;
 
-        /* Construtor usado para inicializar o cliente JMS do Chat */
-        public ChatConnection(String topicFactory, String topicName, String username, JPanel chatPanel) throws Exception {
-            // Obtem os dados da conexao JNDI atraves 
-            // do arquivo jndi.properties
-            InitialContext ctx = new InitialContext();
-            // O cliente utiliza o TopicConnectionFactory 
-            // para criar um objeto do tipo
-            // TopicConnection com o provedor JMS
-            TopicConnectionFactory conFactory = (TopicConnectionFactory) ctx.lookup(topicFactory);
+    /* Construtor usado para inicializar o cliente JMS do Chat */
+    public ChatConnection(String topicFactory, String topicName, String username, JPanel chatPanel, Boolean isPrivate) throws Exception {
 
-            // Utiliza o TopicConnectionFactory para criar 
-            //a conexao com o provedor JMS
-            TopicConnection connection = conFactory.createTopicConnection();
-            connection.setClientID(username);
-            // Utiliza o TopicConnection para criar a sessao para o produtor
-            // Atributo false -> uso ou nao de transacoes (tratar uma serie de
-            // envios/recebimentos como unidade atomica e controla-la via commit e rollback)
-            // Atributo AUTO_ACKNOWLEDGE -> Exige confirmacao automatica apos recebimento correto
-            TopicSession pubSession
-                    = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+        InitialContext ctx = new InitialContext();
 
-            // Utiliza o TopicConnection para criar a sessao para o consumidor
-            TopicSession subSession
-                    = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+        TopicConnectionFactory conFactory = (TopicConnectionFactory) ctx.lookup(topicFactory);
 
-            // Pesquisa o destino do topico via JNDI
-            Topic chatTopic = (Topic) ctx.lookup(topicName);
-            // Cria o topico JMS do produtor das mensagens 
-            // atraves da sessao e o nome do topico
+        TopicConnection connection = conFactory.createTopicConnection();
+        connection.setClientID(username);
 
-            TopicPublisher publisher
-                    = pubSession.createPublisher(chatTopic);
+        TopicSession pubSession
+                = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            // Cria (Assina) o topico JMS do consumidor das 
-            // mensagens atraves da sessao e o nome do topico
-            TopicSubscriber subscriber
-                    = subSession.createDurableSubscriber(chatTopic, username, "", false);
-            // Escuta o topico para receber as mensagens 
-            // atraves do metodo onMessage()
 
-            subscriber.setMessageListener(this);
+        TopicSession subSession
+                = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            // Inicializa as variaveis do Chat
-            this.connection = connection;
-            this.pubSession = pubSession;
-            this.publisher = publisher;
-            this.subscriber = subscriber;
-            this.username = username;
-            this.chatPanel = chatPanel;
-            // Inicia a conexao JMS, permite que 
-            // mensagens sejam entregues
-            connection.start();
+
+        Topic chatTopic = (Topic) ctx.lookup(topicName);
+
+
+        TopicPublisher publisher
+                = pubSession.createPublisher(chatTopic);
+
+        TopicSubscriber subscriber
+                = subSession.createDurableSubscriber(chatTopic, username, "", false);
+
+
+        subscriber.setMessageListener(this);
+        if (isPrivate) {
+            username = username.replace("P-", "");
         }
-        public void mess(){
-            
-        }
-        public TopicSubscriber getSubscriber() {
-            return subscriber;
-        }
+        // Inicializa as variaveis do Chat
+        this.connection = connection;
+        this.pubSession = pubSession;
+        this.publisher = publisher;
+        this.subscriber = subscriber;
+        this.username = username;
+        this.chatPanel = chatPanel;
+        connection.start();
+    }
 
-        public MessageListener checkMessages() throws JMSException {
-            return this.subscriber.getMessageListener();
-        }
-        // Recebe as mensagens do topico assinado
+    public void mess() {
 
-        @Override
-        public void onMessage(Message message) {
-            try {
-                TextMessage textMessage = (TextMessage) message;
-                String text = textMessage.getText();
-                System.out.println(text);
-                if (!text.contains(connection.getClientID())) {
-                    MessageRight item = new MessageRight(text);
-                    JPanel chatP = chatPanel;
-                    chatPanel.add(item, "wrap");
-                    chatPanel.repaint();
-                    chatPanel.revalidate();
-                }
+    }
 
-            } catch (JMSException jmse) {
-                jmse.printStackTrace();
+    public TopicSubscriber getSubscriber() {
+        return subscriber;
+    }
+
+    public MessageListener checkMessages() throws JMSException {
+        return this.subscriber.getMessageListener();
+    }
+    // Recebe as mensagens do topico assinado
+
+    @Override
+    public void onMessage(Message message) {
+        try {
+            TextMessage textMessage = (TextMessage) message;
+            String text = textMessage.getText();
+            if (!text.contains(username)) {
+                MessageRight item = new MessageRight(text);
+                JPanel chatP = chatPanel;
+                chatPanel.add(item, "wrap");
+                chatPanel.repaint();
+                chatPanel.revalidate();
             }
-        }
 
-        // Cria a mensagem de texto e a publica no topico. Evento referente ao
-        //produtor
-        public void writeMessage(String text) throws JMSException {
-            // Recebe um objeto da sessao para criar 
-            // uma mensagem do tipo TextMessage
-            TextMessage message = pubSession.createTextMessage();
-            // Seta no objeto a mensagem que sera enviada
-            message.setText(username + ": " + text);
-            // Publica a mensagem no topico
-            publisher.publish(message);
-        }
-
-        public String getClientID() throws JMSException {
-            return connection.getClientID();
-        }
-
-        // Fecha a conexao JMS
-        public void close() throws JMSException {
-            connection.close();
+        } catch (JMSException jmse) {
+            jmse.printStackTrace();
         }
     }
+
+    // Cria a mensagem de texto e a publica no topico. Evento referente ao
+    //produtor
+    public void writeMessage(String text) throws JMSException {
+        TextMessage message = pubSession.createTextMessage();
+        message.setText(username + ": " + text);
+        publisher.publish(message);
+    }
+
+    public String getUsername() throws JMSException {
+        return username;
+    }
+
+    // Fecha a conexao JMS
+    public void close() throws JMSException {
+        connection.close();
+    }
+
+    public void stop() throws JMSException {
+//            connection.stop();
+        pubSession.close();
+    }
+}

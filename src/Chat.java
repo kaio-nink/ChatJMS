@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +16,7 @@ import net.miginfocom.swing.MigLayout;
  *
  * @author kaion
  */
-public class Chat extends javax.swing.JFrame implements Runnable {
+public class Chat extends javax.swing.JFrame {
 
     private static ChatConnection chat;
 
@@ -60,7 +61,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         chatPanel.setLayout(chatPanelLayout);
         chatPanelLayout.setHorizontalGroup(
             chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+            .addGap(0, 486, Short.MAX_VALUE)
         );
         chatPanelLayout.setVerticalGroup(
             chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -77,6 +78,11 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         });
 
         private1Button.setText("Chat privado 1");
+        private1Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                private1ButtonActionPerformed(evt);
+            }
+        });
 
         private2Button.setText("Chat privado 2");
         private2Button.addActionListener(new java.awt.event.ActionListener() {
@@ -86,6 +92,11 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         });
 
         private3Button.setText("Chat privado 3");
+        private3Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                private3ButtonActionPerformed(evt);
+            }
+        });
 
         sendButton.setBackground(new java.awt.Color(51, 51, 51));
         sendButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -125,7 +136,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 .addGap(6, 6, 6))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(scrollPane)
+                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
                 .addGap(6, 6, 6))
         );
         jPanel1Layout.setVerticalGroup(
@@ -151,7 +162,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,16 +173,31 @@ public class Chat extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void generalChatButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generalChatButtonActionPerformed
+        generalChatButton.setBackground(Color.red);
+        private1Button.setBackground(new Color(187,187,187));
+        private2Button.setBackground(new Color(187,187,187));
+        private3Button.setBackground(new Color(187,187,187));
+        
+        try {
+            String username = chat.getUsername();
+            chat.close();
+            chat = new ChatConnection("QueueCF", "all", username, chatPanel, false);
+        } catch (JMSException ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_generalChatButtonActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         String text = messageTextArea.getText().trim();
         try {
-            MessageRight item = new MessageRight(chat.getClientID() + ": " + text);
+            MessageRight item = new MessageRight(chat.getUsername() + ": " + text);
             chat.writeMessage(text);
             chatPanel.add(item, "wrap, al right");
             chatPanel.repaint();
             chatPanel.revalidate();
+            messageTextArea.setText("");
         } catch (JMSException ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -179,8 +205,55 @@ public class Chat extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void private2ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private2ButtonActionPerformed
-        // TODO add your handling code here:
+        private2Button.setBackground(Color.red);
+        generalChatButton.setBackground(new Color(187,187,187));
+        private1Button.setBackground(new Color(187,187,187));
+        private3Button.setBackground(new Color(187,187,187));
+        
+        try {
+            String username = chat.getUsername();
+            chat.close();
+            chat = new ChatConnection("QueueCF", "private2", "P-" + username, chatPanel, true);
+        } catch (JMSException ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_private2ButtonActionPerformed
+
+    private void private1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private1ButtonActionPerformed
+        private1Button.setBackground(Color.red);
+        generalChatButton.setBackground(new Color(78, 80, 82));
+        private2Button.setBackground(new Color(187,187,187));
+        private3Button.setBackground(new Color(187,187,187));
+        
+        try {
+            String username = chat.getUsername();
+            chat.close();
+            chat = new ChatConnection("QueueCF", "private1", "P-" + username, chatPanel, true);
+        } catch (JMSException ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_private1ButtonActionPerformed
+
+    private void private3ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private3ButtonActionPerformed
+        private3Button.setBackground(Color.red);
+        generalChatButton.setBackground(new Color(78, 80, 82));
+        private1Button.setBackground(new Color(187,187,187));
+        private2Button.setBackground(new Color(187,187,187));
+        
+        try {
+            String username = chat.getUsername();
+            chat.close();
+            chat = new ChatConnection("QueueCF", "private3", "P-" + username, chatPanel, true);
+        } catch (JMSException ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_private3ButtonActionPerformed
 
     public javax.swing.JPanel getPanel() {
         return chatPanel;
@@ -188,31 +261,6 @@ public class Chat extends javax.swing.JFrame implements Runnable {
 
     // Roda o Chat
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Chat.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Chat.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Chat.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Chat.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -225,7 +273,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
 
                     System.out.print("Digite seu nome: ");
                     String name = commandLine.nextLine();
-                    chat = new ChatConnection("QueueCF", "all", name, chatFrame.chatPanel);
+                    chat = new ChatConnection("QueueCF", "all", name, chatFrame.chatPanel, false);
 //                    chatFrame.checkMessages(chat.getSubscriber());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -249,42 +297,4 @@ public class Chat extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton sendButton;
     // End of variables declaration//GEN-END:variables
 
-//    @Override
-//    public void onMessage(Message message) {
-//        try {
-//            // As mensagens criadas como TextMessage 
-//            // e devem ser recebidas como TextMessage
-//            TextMessage textMessage = (TextMessage) message;
-//            String text = textMessage.getText();
-//            System.out.println(text);
-//            MessageRight item = new MessageRight(chat.getClientID() + ": " + text);
-//            chat.writeMessage(text);
-//            chatPanel.add(item, "wrap, al right");
-//            chatPanel.repaint();
-//            chatPanel.revalidate();
-//
-//        } catch (JMSException jmse) {
-//            jmse.printStackTrace();
-//        }
-//    }
-    @Override
-    public void run() {
-        TopicSubscriber subscriber = chat.getSubscriber();
-        TextMessage text;
-        try {
-            text = (TextMessage) subscriber.receive();
-            if (text != null) {
-                MessageRight item = new MessageRight(chat.getClientID() + ": " + text);
-                chatPanel.add(item, "wrap, al right");
-                chatPanel.repaint();
-                chatPanel.revalidate();
-                Thread.sleep(100);
-            }
-        } catch (JMSException ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
 }
