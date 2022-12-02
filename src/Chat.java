@@ -4,8 +4,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
-import javax.jms.TextMessage;
-import javax.jms.TopicSubscriber;
 import net.miginfocom.swing.MigLayout;
 
 /*
@@ -43,9 +41,7 @@ public class Chat extends javax.swing.JFrame {
         scrollPane = new javax.swing.JScrollPane();
         chatPanel = new javax.swing.JPanel();
         generalChatButton = new javax.swing.JButton();
-        private1Button = new javax.swing.JButton();
-        private2Button = new javax.swing.JButton();
-        private3Button = new javax.swing.JButton();
+        privateButton = new javax.swing.JButton();
         sendButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         messageTextArea = new javax.swing.JTextArea();
@@ -77,24 +73,10 @@ public class Chat extends javax.swing.JFrame {
             }
         });
 
-        private1Button.setText("Chat privado 1");
-        private1Button.addActionListener(new java.awt.event.ActionListener() {
+        privateButton.setText("Chat privado");
+        privateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                private1ButtonActionPerformed(evt);
-            }
-        });
-
-        private2Button.setText("Chat privado 2");
-        private2Button.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                private2ButtonActionPerformed(evt);
-            }
-        });
-
-        private3Button.setText("Chat privado 3");
-        private3Button.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                private3ButtonActionPerformed(evt);
+                privateButtonActionPerformed(evt);
             }
         });
 
@@ -121,34 +103,28 @@ public class Chat extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(generalChatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(private1Button)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(private2Button)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(private3Button, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(privateButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(6, 6, 6))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(scrollPane)))
                 .addGap(6, 6, 6))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(private3Button, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(private2Button)
-                        .addComponent(private1Button))
-                    .addComponent(generalChatButton, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(generalChatButton)
+                    .addComponent(privateButton))
                 .addGap(4, 4, 4)
                 .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -174,9 +150,7 @@ public class Chat extends javax.swing.JFrame {
 
     private void generalChatButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generalChatButtonActionPerformed
         generalChatButton.setBackground(Color.red);
-        private1Button.setBackground(new Color(187,187,187));
-        private2Button.setBackground(new Color(187,187,187));
-        private3Button.setBackground(new Color(187,187,187));
+        privateButton.setBackground(new Color(187,187,187));
         
         try {
             String username = chat.getUsername();
@@ -204,28 +178,9 @@ public class Chat extends javax.swing.JFrame {
 
     }//GEN-LAST:event_sendButtonActionPerformed
 
-    private void private2ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private2ButtonActionPerformed
-        private2Button.setBackground(Color.red);
-        generalChatButton.setBackground(new Color(187,187,187));
-        private1Button.setBackground(new Color(187,187,187));
-        private3Button.setBackground(new Color(187,187,187));
-        
-        try {
-            String username = chat.getUsername();
-            chat.close();
-            chat = new ChatConnection("QueueCF", "private2", "P-" + username, chatPanel, true);
-        } catch (JMSException ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_private2ButtonActionPerformed
-
-    private void private1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private1ButtonActionPerformed
-        private1Button.setBackground(Color.red);
+    private void privateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privateButtonActionPerformed
+        privateButton.setBackground(Color.red);
         generalChatButton.setBackground(new Color(78, 80, 82));
-        private2Button.setBackground(new Color(187,187,187));
-        private3Button.setBackground(new Color(187,187,187));
         
         try {
             String username = chat.getUsername();
@@ -236,24 +191,7 @@ public class Chat extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_private1ButtonActionPerformed
-
-    private void private3ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_private3ButtonActionPerformed
-        private3Button.setBackground(Color.red);
-        generalChatButton.setBackground(new Color(78, 80, 82));
-        private1Button.setBackground(new Color(187,187,187));
-        private2Button.setBackground(new Color(187,187,187));
-        
-        try {
-            String username = chat.getUsername();
-            chat.close();
-            chat = new ChatConnection("QueueCF", "private3", "P-" + username, chatPanel, true);
-        } catch (JMSException ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_private3ButtonActionPerformed
+    }//GEN-LAST:event_privateButtonActionPerformed
 
     public javax.swing.JPanel getPanel() {
         return chatPanel;
@@ -290,9 +228,7 @@ public class Chat extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea messageTextArea;
-    private javax.swing.JButton private1Button;
-    private javax.swing.JButton private2Button;
-    private javax.swing.JButton private3Button;
+    private javax.swing.JButton privateButton;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JButton sendButton;
     // End of variables declaration//GEN-END:variables
